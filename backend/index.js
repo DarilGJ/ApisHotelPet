@@ -12,14 +12,14 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//const db = require('./modelos');
-//db.sequelize.sync();
+const db = require('./app/models');
+db.sequelize.sync();
 
 app.get('/', (req, res) => {
     res.send('Proyecto Final Desarrollo Web HOTEL PETS!');
 });
 
-//require('./rutas')(app);
+require('./app/routes/user.route')(app);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
