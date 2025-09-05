@@ -167,11 +167,9 @@ Este proyecto está bajo la Licencia ISC.
 
 ## 👥 Autores
 
-- [Tu Nombre] - *Desarrollo inicial*
+- Daril Garcia - *Desarrollo inicial*
 
-## 📞 Contacto
 
-Si tienes alguna pregunta o sugerencia, no dudes en contactarme.
 
 ---
 
