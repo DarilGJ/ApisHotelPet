@@ -29,7 +29,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM('Manager', 'receptionist', 'janitors', 'petSitter', 'veterinary', 'logistics', 'finance', 'HHRR'),
         },
         salary: {
-            type: Sequelize.DECIMAL(5, 2),
+            type: Sequelize.DECIMAL(7, 2),
         },
         hiringDate: {
             type: Sequelize.DATE,

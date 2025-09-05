@@ -20,6 +20,9 @@ app.get('/', (req, res) => {
 });
 
 require('./app/routes/user.route')(app);
+require('./app/routes/room.route')(app);
+require('./app/routes/employee.route')(app);
+require('./app/routes/service.route')(app);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
