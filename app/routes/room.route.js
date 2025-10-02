@@ -10,7 +10,7 @@ module.exports = app => {
     //Update a Room with id
     router.put('/:id/update', rooms.update);
     //Delete a Room with id
-    router.delete('/:id/delete', rooms.delete);
+    router.delete('/:id', rooms.delete);
 
     app.use('/api/rooms', router);
 };

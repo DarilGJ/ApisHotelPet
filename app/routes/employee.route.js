@@ -7,9 +7,9 @@ module.exports = app => {
     router.get('/', employees.findAll);
     //Retrieve a single Employee with id
     router.get('/:id/employee', employees.findOne);
-    //Update a Employee with id
+    //Update an Employee with id
     router.put('/:id/update', employees.update);
-    //Delete a Employee with id
+    //Delete an Employee with id
     router.delete('/:id/delete', employees.delete);
 
     app.use('/api/employees', router);

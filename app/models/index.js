@@ -46,35 +46,18 @@ db.pets.belongsTo(db.customers, {
 })
 
 // Cliente -> Reservas (1:N)
-db.customers.hasMany(db.reserves, {
-    foreignKey: 'customer_id',
-    as: 'reserves'
-});
-db.reserves.belongsTo(db.customers, {
-    foreignKey: 'reserve_id',
-    as: 'customers'
-})
+db.customers.hasMany(db.reserves);
+db.reserves.belongsTo(db.customers);
 
 
-//// Habitacion -> Reservas (1:N)
-db.rooms.hasMany(db.reserves, {
-    foreignKey: 'room_id',
-    as: 'reserves'
-});
-db.reserves.belongsTo(db.rooms, {
-    foreignKey: 'reserve_id',
-    as: 'rooms'
-});
+// Habitacion -> Reservas (1:N)
+db.rooms.hasMany(db.reserves);
+db.reserves.belongsTo(db.rooms);
 
-//// Empleado -> Reservas (1:N)
-db.employees.hasMany(db.reserves, {
-    foreignKey: 'employee_id',
-    as: 'reserves'
-});
-db.reserves.belongsTo(db.employees, {
-    foreignKey: 'reserve_id',
-    as: 'employees'
-});
+
+// Empleado -> Reservas (1:N)
+db.employees.hasMany(db.reserves);
+db.reserves.belongsTo(db.employees);
 
 //// Reserva -> Mascotas (N:M)
 db.reserves.belongsToMany(db.pets, {
