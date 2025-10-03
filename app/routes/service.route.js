@@ -2,15 +2,15 @@ module.exports = app => {
     const services = require('../controllers/service.controller');
     var router = require('express').Router();
     //Create a new Service
-    router.post('/create', services.create);
+    router.post('', services.create);
     //Retrieve all Services
-    router.get('/', services.findAll);
+    router.get('', services.findAll);
     //Retrieve a single Service with id
-    router.get('/:id/service', services.findOne);
+    router.get('/:id', services.findOne);
     //Update a Service with id
-    router.put('/:id/update', services.update);
+    router.put('/:id', services.update);
     //Delete a Service with id
-    router.delete('/:id/delete', services.delete);
+    router.delete('/:id', services.delete);
 
     app.use('/api/services', router);
 };

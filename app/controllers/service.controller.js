@@ -77,10 +77,6 @@ exports.update = (req, res) => {
                 res.send({
                     message: 'Service was updated successfully.',
                 });
-            } else {
-                res.send({
-                    message: `Cannot update Service with id=${id}. Maybe Service was not found or req.body is empty!`,
-                });
             }
         })
         .catch((err) => {
