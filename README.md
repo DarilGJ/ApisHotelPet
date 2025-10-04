@@ -6,25 +6,27 @@ Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyect
 
 - API RESTful para gestión de hotel de mascotas
 - Base de datos PostgreSQL con Sequelize ORM
-- Autenticación y autorización de usuarios
+- Sistema de reservas completas para mascotas
+- Dashboard con estadísticas en tiempo real
 - Gestión de habitaciones, empleados, servicios y clientes
-- Sistema de reservas para mascotas
+- Relaciones complejas entre entidades (N:M, 1:N)
+- Base de datos en la nube (Neon.tech)
 
 ## 🛠️ Tecnologías Utilizadas
 
 - **Node.js** - Runtime de JavaScript
 - **Express.js** - Framework web para Node.js
-- **PostgreSQL** - Base de datos relacional
+- **PostgreSQL** - Base de datos relacional (Neon.tech)
 - **Sequelize** - ORM para Node.js
 - **CORS** - Middleware para manejo de CORS
 - **Nodemon** - Herramienta de desarrollo
+- **pg** - Driver de PostgreSQL para Node.js
 
 ## 📋 Prerrequisitos
 
 Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
 - [Node.js](https://nodejs.org/) (versión 14 o superior)
-- [PostgreSQL](https://www.postgresql.org/) (versión 12 o superior)
 - npm o yarn
 
 ## 🔧 Instalación
@@ -40,21 +42,14 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
    npm install
    ```
 
-3. **Configura la base de datos**
-   - Crea una base de datos PostgreSQL
-   - Configura las variables de entorno en un archivo `.env`:
-   ```env
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=hotel_pets
-   DB_USER=tu_usuario
-   DB_PASSWORD=tu_contraseña
-   ```
+3. **Configuración de Base de Datos**
+   - El proyecto utiliza Neon.tech como base de datos en la nube
+   - La configuración ya está establecida en `app/config/db.config.js`
+   - No se requiere configuración adicional para desarrollo
 
-4. **Ejecuta las migraciones**
-   ```bash
-   npm run migrate
-   ```
+4. **Sincronización de Base de Datos**
+   - Las tablas se crean automáticamente al iniciar el servidor
+   - Sequelize sincroniza los modelos con la base de datos
 
 ## 🚀 Uso
 
@@ -70,6 +65,10 @@ npm start
 ```
 
 ## 📚 API Endpoints
+
+### Dashboard
+- `GET /api/dashboard/stats` - Obtener estadísticas del dashboard
+- `GET /api/dashboard/recent-reservations` - Obtener reservas recientes
 
 ### Usuarios
 - `GET /api/users` - Obtener todos los usuarios
@@ -106,20 +105,26 @@ npm start
 - `PUT /api/customers/:id` - Actualizar cliente
 - `DELETE /api/customers/:id` - Eliminar cliente
 
+### Reservas
+- `POST /api/reserves` - Crear nueva reserva
+
 ## 🗂️ Estructura del Proyecto
 
 ```
 backend/
 ├── app/
 │   ├── config/
-│   │   └── db.config.js          # Configuración de base de datos
+│   │   └── db.config.js          # Configuración de base de datos (Neon.tech)
 │   ├── controllers/              # Controladores de la API
 │   │   ├── customer.controller.js
+│   │   ├── dashboard.controller.js
 │   │   ├── employee.controller.js
+│   │   ├── recentReservation.controller.js
+│   │   ├── reserve.controller.js
 │   │   ├── room.controller.js
 │   │   ├── service.controller.js
 │   │   └── user.controller.js
-│   ├── models/                   # Modelos de Sequelize
+│   ├── models/                   # Modelos de Sequelize con relaciones
 │   │   ├── customer.model.js
 │   │   ├── employee.model.js
 │   │   ├── pet.model.js
@@ -129,10 +134,12 @@ backend/
 │   │   ├── service.model.js
 │   │   ├── serviceReservation.model.js
 │   │   ├── user.model.js
-│   │   └── index.js
+│   │   └── index.js              # Configuración de relaciones
 │   └── routes/                   # Rutas de la API
 │       ├── customer.route.js
+│       ├── dashboard.route.js
 │       ├── employee.route.js
+│       ├── reserve.route.js
 │       ├── room.route.js
 │       ├── service.route.js
 │       └── user.route.js
@@ -141,17 +148,84 @@ backend/
 └── README.md                     # Este archivo
 ```
 
-## 🧪 Testing
+## 🗃️ Modelo de Base de Datos
 
-```bash
-npm test
-```
+### Entidades Principales
+- **Users** - Usuarios del sistema
+- **Customers** - Clientes del hotel
+- **Pets** - Mascotas de los clientes
+- **Employees** - Empleados del hotel
+- **Rooms** - Habitaciones disponibles
+- **Services** - Servicios adicionales
+- **Reserves** - Reservas de mascotas
+
+### Relaciones
+- **Customer → Pets** (1:N) - Un cliente puede tener múltiples mascotas
+- **Customer → Reserves** (1:N) - Un cliente puede hacer múltiples reservas
+- **Room → Reserves** (1:N) - Una habitación puede tener múltiples reservas
+- **Employee → Reserves** (1:N) - Un empleado puede manejar múltiples reservas
+- **Reserve ↔ Pets** (N:M) - Una reserva puede incluir múltiples mascotas
+- **Reserve ↔ Services** (N:M) - Una reserva puede incluir múltiples servicios
+
+## 📊 Dashboard
+
+El sistema incluye un dashboard con estadísticas en tiempo real:
+
+- **Total de Clientes** - Número total de clientes registrados
+- **Total de Empleados** - Número total de empleados
+- **Total de Habitaciones** - Número total de habitaciones disponibles
+- **Total de Reservas** - Número total de reservas realizadas
+- **Reservas Activas** - Reservas con estado "confirmed"
+- **Habitaciones Disponibles** - Habitaciones con estado "available"
 
 ## 📝 Scripts Disponibles
 
 - `npm start` - Ejecuta el servidor en modo producción
 - `npm run dev` - Ejecuta el servidor en modo desarrollo con nodemon
-- `npm test` - Ejecuta las pruebas
+
+## 🔧 Configuración de Desarrollo
+
+### Variables de Entorno
+El proyecto utiliza Neon.tech como base de datos en la nube. La configuración está en `app/config/db.config.js`:
+
+```javascript
+module.exports = {
+    HOST: "ep-green-waterfall-ad36l30b-pooler.c-2.us-east-1.aws.neon.tech",
+    USER: "neondb_owner",
+    PASSWORD: "npg_b6oZM7jBkUhz",
+    DB: "neondb",
+    dialect: "postgres",
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+    }
+};
+```
+
+### Sincronización de Base de Datos
+- Las tablas se crean automáticamente al iniciar el servidor
+- Sequelize maneja la sincronización de modelos
+- No se requieren migraciones manuales
+
+## 🚀 Funcionalidades Implementadas
+
+### Sistema de Reservas
+- Creación de reservas con fechas de inicio y fin
+- Asignación de habitaciones y empleados
+- Cálculo automático de subtotal, IVA y total
+- Estados de reserva (pending, confirmed, cancelled)
+
+### Gestión de Entidades
+- CRUD completo para todas las entidades principales
+- Relaciones complejas entre entidades
+- Validaciones de datos
+
+### Dashboard en Tiempo Real
+- Estadísticas actualizadas automáticamente
+- Vista de reservas recientes
+- Métricas de ocupación y disponibilidad
 
 ## 🤝 Contribución
 
@@ -168,8 +242,6 @@ Este proyecto está bajo la Licencia ISC.
 ## 👥 Autores
 
 - Daril Garcia - *Desarrollo inicial*
-
-
 
 ---
 
