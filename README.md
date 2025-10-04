@@ -2,7 +2,7 @@
 
 Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyecto final de Desarrollo Web.
 
-## 🚀 Características
+##  Características
 
 - API RESTful para gestión de hotel de mascotas
 - Base de datos PostgreSQL con Sequelize ORM
@@ -12,7 +12,7 @@ Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyect
 - Relaciones complejas entre entidades (N:M, 1:N)
 - Base de datos en la nube (Neon.tech)
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 - **Node.js** - Runtime de JavaScript
 - **Express.js** - Framework web para Node.js
@@ -22,14 +22,14 @@ Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyect
 - **Nodemon** - Herramienta de desarrollo
 - **pg** - Driver de PostgreSQL para Node.js
 
-## 📋 Prerrequisitos
+##  Prerrequisitos
 
 Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
 - [Node.js](https://nodejs.org/) (versión 14 o superior)
 - npm o yarn
 
-## 🔧 Instalación
+##  Instalación
 
 1. **Clona el repositorio**
    ```bash
@@ -51,7 +51,7 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
    - Las tablas se crean automáticamente al iniciar el servidor
    - Sequelize sincroniza los modelos con la base de datos
 
-## 🚀 Uso
+##  Uso
 
 ### Desarrollo
 ```bash
@@ -64,7 +64,7 @@ El servidor se ejecutará en `http://localhost:3000`
 npm start
 ```
 
-## 📚 API Endpoints
+##  API Endpoints
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Obtener estadísticas del dashboard
@@ -108,7 +108,7 @@ npm start
 ### Reservas
 - `POST /api/reserves` - Crear nueva reserva
 
-## 🗂️ Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 backend/
@@ -148,7 +148,7 @@ backend/
 └── README.md                     # Este archivo
 ```
 
-## 🗃️ Modelo de Base de Datos
+##  Modelo de Base de Datos
 
 ### Entidades Principales
 - **Users** - Usuarios del sistema
@@ -167,7 +167,7 @@ backend/
 - **Reserve ↔ Pets** (N:M) - Una reserva puede incluir múltiples mascotas
 - **Reserve ↔ Services** (N:M) - Una reserva puede incluir múltiples servicios
 
-## 📊 Dashboard
+##  Dashboard
 
 El sistema incluye un dashboard con estadísticas en tiempo real:
 
@@ -178,12 +178,12 @@ El sistema incluye un dashboard con estadísticas en tiempo real:
 - **Reservas Activas** - Reservas con estado "confirmed"
 - **Habitaciones Disponibles** - Habitaciones con estado "available"
 
-## 📝 Scripts Disponibles
+##  Scripts Disponibles
 
 - `npm start` - Ejecuta el servidor en modo producción
 - `npm run dev` - Ejecuta el servidor en modo desarrollo con nodemon
 
-## 🔧 Configuración de Desarrollo
+##  Configuración de Desarrollo
 
 ### Variables de Entorno
 El proyecto utiliza Neon.tech como base de datos en la nube. La configuración está en `app/config/db.config.js`:
@@ -209,7 +209,7 @@ module.exports = {
 - Sequelize maneja la sincronización de modelos
 - No se requieren migraciones manuales
 
-## 🚀 Funcionalidades Implementadas
+##  Funcionalidades Implementadas
 
 ### Sistema de Reservas
 - Creación de reservas con fechas de inicio y fin
@@ -227,7 +227,7 @@ module.exports = {
 - Vista de reservas recientes
 - Métricas de ocupación y disponibilidad
 
-## 🤝 Contribución
+##  Contribución
 
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
@@ -235,11 +235,11 @@ module.exports = {
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
-## 📄 Licencia
+##  Licencia
 
 Este proyecto está bajo la Licencia ISC.
 
-## 👥 Autores
+##  Autores
 
 - Daril Garcia - *Desarrollo inicial*
 

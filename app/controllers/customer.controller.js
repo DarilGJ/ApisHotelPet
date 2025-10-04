@@ -71,6 +71,7 @@ exports.create = (req, res) => {
     //Update a Customer with an id
     exports.update = (req, res) => {
         const id = req.params.id;
+        console.log(req.body, id);
         Customer.update(req.body, {
             where: {id: id},
         })
