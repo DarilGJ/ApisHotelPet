@@ -79,6 +79,10 @@ exports.create = (req, res) => {
                 res.send({
                     message: "Customer was updated successfully",
                 });
+            } else {
+                res.send({
+                    message: `Cannot update Customer with id=${id}. Maybe Customer was not found or req.body is empty!`,
+                });
             }
         })
         .catch((err) => {
