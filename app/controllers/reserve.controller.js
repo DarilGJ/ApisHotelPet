@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const db = require('../models');
 const Reserve = db.reserves
 const Op = db.Sequelize.Op;
@@ -31,10 +32,88 @@ exports.create = (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            console.log('error', err);
             res.status(500).send({
                 message:
                     err.message || 'Some error occurred while creating the Reserve.',
             });
         });
 };
+
+exports.findAll = (req, res) => {
+    const number = req.query.number;
+    var condition = number ? { number: { [Op.like]: `%${number}%` } } : null;
+    Reserve.findAll({ where: condition })
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message: err.message || 'Some error occurred while retrieving reserves.',
+            });
+        });
+};
+
+exports.findOne = (req, res) =>{
+    const id = req.params.id;
+    Reserve.findByPk(id)
+    .then((data) => {
+        if(data) {
+            res.send(data);
+        }else{
+            res.status(404).send({
+                message: `Can't find Reserve with id = ${id}.`,
+            });
+        }
+    })
+    .catch((err) => {
+        res.status(500).send({
+            message: 'Error retrieving Reserve with id = '+id,
+        });
+    });
+};
+
+exports.update = (req, res) => {
+    const id = req.params.id;
+    Reserve.update(req.body, {
+        where: {id: id},
+    })
+    .then((num)=>{
+        if(num == 1){
+            res.send({
+                message: "Reserve was updated succesfully",
+            });
+        }else{
+            res.send({
+                message: `Can't update Reserve with id = ${id}. Maybe Reserve was not found or req.body is empty!`,
+            });
+        }
+    })
+    .catch((err) => {
+        res.status(500).send({
+            message: "Error updating Reserve with id = "+id,
+        });
+    });
+};
+
+exports.delete = (req, res) => {
+    const id = req.params.id;
+    Reserve.destroy({
+        where: {id: id},
+    })
+    .then((num) =>{
+        if(num==1){
+            res.send({
+                message: "Reserve was deleted succesfully",
+            });
+        }else{
+            res.send({
+                message: `Can't delete Reserve with id = ${id}. Maybe Reserve was not found`,
+            });
+        }
+    })
+    .catch((err) => {
+        res.status(500).send({
+            message: 'Error deleting Reserve with id = '+id,
+        });
+    });
+}

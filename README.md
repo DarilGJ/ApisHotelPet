@@ -106,7 +106,50 @@ npm start
 - `DELETE /api/customers/:id` - Eliminar cliente
 
 ### Reservas
+- `GET /api/reserves` - Obtener todas las reservas
 - `POST /api/reserves` - Crear nueva reserva
+- `GET /api/reserves/:id` - Obtener reserva por ID
+- `PUT /api/reserves/:id` - Actualizar reserva
+- `DELETE /api/reserves/:id` - Eliminar reserva
+
+### Ejemplos de Uso - Reservas
+
+#### Crear una nueva reserva
+```bash
+POST /api/reserves
+Content-Type: application/json
+
+{
+  "startDate": "2024-01-15",
+  "endDate": "2024-01-20",
+  "checkInDate": "2024-01-15T14:00:00Z",
+  "checkOutDate": "2024-01-20T12:00:00Z",
+  "status": "confirmed",
+  "observation": "Mascota requiere dieta especial",
+  "subTotal": 150.00,
+  "iva": 24.00,
+  "total": 174.00,
+  "customerId": 1,
+  "roomId": 2,
+  "employeeId": 1
+}
+```
+
+#### Buscar reservas por número
+```bash
+GET /api/reserves?number=123
+```
+
+#### Actualizar estado de reserva
+```bash
+PUT /api/reserves/1
+Content-Type: application/json
+
+{
+  "status": "inProgress",
+  "checkInDate": "2024-01-15T15:30:00Z"
+}
+```
 
 ##  Estructura del Proyecto
 
@@ -215,7 +258,11 @@ module.exports = {
 - Creación de reservas con fechas de inicio y fin
 - Asignación de habitaciones y empleados
 - Cálculo automático de subtotal, IVA y total
-- Estados de reserva (pending, confirmed, cancelled)
+- Estados de reserva (pending, confirmed, inProgress, completed, canceled)
+- Fechas de check-in y check-out opcionales
+- Observaciones detalladas para cada reserva
+- Búsqueda de reservas por número
+- CRUD completo para gestión de reservas
 
 ### Gestión de Entidades
 - CRUD completo para todas las entidades principales
