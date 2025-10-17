@@ -6,10 +6,11 @@ exports.getRecentReservation = async(req, res) => {
     try {
         const getRecentReservations = await RecentReservation.findAll({
             limit: 5,
-            order: [['checkInDate', 'DESC']],
+            order: [['startDate', 'DESC']],
             include:[
                 { model: db.customers, attributes: ['name'] },
-                { model: db.rooms, attributes: ['number'] }
+                { model: db.rooms, attributes: ['number', 'type'] },
+                { model: db.employees, attributes: ['name'] }
             ]
         });
         
@@ -17,13 +18,18 @@ exports.getRecentReservation = async(req, res) => {
             return {
                 id: reservation.id,
                 customer: {
-                    name: reservation.customer.name,
+                    name: reservation.customer?.name || 'Cliente no disponible'
                 },
-                romm: {
-                    number: reservation.room.number
+                room: {
+                    number: reservation.room?.number || 'N/A',
+                    type: reservation.room?.type || 'Tipo no disponible'
                 },
-                checkIn: reservation.checkInDate,
-                checkOut: reservation.checkOutDate,
+                startDate: reservation.startDate,
+                endDate: reservation.endDate,
+                employee: {
+                    name: reservation.employee?.name || 'N/A'
+                },
+                total: reservation.total,
                 status: reservation.status
             }
         })
