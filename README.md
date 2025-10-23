@@ -11,6 +11,8 @@ Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyect
 - Gestión de habitaciones, empleados, servicios y clientes
 - Relaciones complejas entre entidades (N:M, 1:N)
 - Base de datos en la nube (Neon.tech)
+- **Integración de pagos con Stripe** - Procesamiento seguro de pagos
+- **Variables de entorno** - Configuración segura con dotenv
 
 ##  Tecnologías Utilizadas
 
@@ -21,6 +23,8 @@ Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyect
 - **CORS** - Middleware para manejo de CORS
 - **Nodemon** - Herramienta de desarrollo
 - **pg** - Driver de PostgreSQL para Node.js
+- **Stripe** - Plataforma de pagos en línea
+- **dotenv** - Gestión de variables de entorno
 
 ##  Prerrequisitos
 
@@ -47,7 +51,15 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
    - La configuración ya está establecida en `app/config/db.config.js`
    - No se requiere configuración adicional para desarrollo
 
-4. **Sincronización de Base de Datos**
+4. **Configuración de Variables de Entorno**
+   - Crea un archivo `.env` en la raíz del proyecto
+   - Configura las siguientes variables:
+   ```env
+   STRIPE_SECRET_KEY=tu_stripe_secret_key
+   STRIPE_PUBLIC_KEY=tu_stripe_public_key
+   ```
+
+5. **Sincronización de Base de Datos**
    - Las tablas se crean automáticamente al iniciar el servidor
    - Sequelize sincroniza los modelos con la base de datos
 
@@ -112,6 +124,9 @@ npm start
 - `PUT /api/reserves/:id` - Actualizar reserva
 - `DELETE /api/reserves/:id` - Eliminar reserva
 
+### Pagos (Stripe)
+- `POST /api/stripe/create-payment-intent` - Crear intención de pago
+
 ### Ejemplos de Uso - Reservas
 
 #### Crear una nueva reserva
@@ -151,13 +166,40 @@ Content-Type: application/json
 }
 ```
 
+### Ejemplos de Uso - Pagos
+
+#### Crear una intención de pago
+```bash
+POST /api/stripe/create-payment-intent
+Content-Type: application/json
+
+{
+  "amount": 174.00,
+  "currency": "usd",
+  "description": "Pago por reserva de mascota",
+  "metadata": {
+    "reservationId": "123",
+    "customerId": "1"
+  }
+}
+```
+
+**Respuesta:**
+```json
+{
+  "clientSecret": "pi_xxx_secret_xxx",
+  "paymentIntentId": "pi_xxx"
+}
+```
+
 ##  Estructura del Proyecto
 
 ```
 backend/
 ├── app/
 │   ├── config/
-│   │   └── db.config.js          # Configuración de base de datos (Neon.tech)
+│   │   ├── db.config.js          # Configuración de base de datos (Neon.tech)
+│   │   └── stripe.config.js      # Configuración de Stripe
 │   ├── controllers/              # Controladores de la API
 │   │   ├── customer.controller.js
 │   │   ├── dashboard.controller.js
@@ -166,6 +208,7 @@ backend/
 │   │   ├── reserve.controller.js
 │   │   ├── room.controller.js
 │   │   ├── service.controller.js
+│   │   ├── stripe.controller.js  # Controlador de pagos Stripe
 │   │   └── user.controller.js
 │   ├── models/                   # Modelos de Sequelize con relaciones
 │   │   ├── customer.model.js
@@ -185,6 +228,7 @@ backend/
 │       ├── reserve.route.js
 │       ├── room.route.js
 │       ├── service.route.js
+│       ├── stripe.route.js        # Rutas de pagos Stripe
 │       └── user.route.js
 ├── server.js                     # Archivo principal del servidor
 ├── package.json                  # Dependencias y scripts
@@ -229,8 +273,9 @@ El sistema incluye un dashboard con estadísticas en tiempo real:
 ##  Configuración de Desarrollo
 
 ### Variables de Entorno
-El proyecto utiliza Neon.tech como base de datos en la nube. La configuración está en `app/config/db.config.js`:
+El proyecto utiliza Neon.tech como base de datos en la nube y Stripe para pagos. La configuración está en los archivos de configuración:
 
+**Base de datos (`app/config/db.config.js`):**
 ```javascript
 module.exports = {
     HOST: "ep-green-waterfall-ad36l30b-pooler.c-2.us-east-1.aws.neon.tech",
@@ -245,6 +290,22 @@ module.exports = {
         idle: 10000
     }
 };
+```
+
+**Stripe (`app/config/stripe.config.js`):**
+```javascript
+require('dotenv').config();
+
+module.exports = {
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    publicKey: process.env.STRIPE_PUBLIC_KEY
+};
+```
+
+**Archivo `.env` requerido:**
+```env
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLIC_KEY=pk_test_...
 ```
 
 ### Sincronización de Base de Datos
@@ -273,6 +334,14 @@ module.exports = {
 - Estadísticas actualizadas automáticamente
 - Vista de reservas recientes
 - Métricas de ocupación y disponibilidad
+
+### Sistema de Pagos
+- Integración completa con Stripe
+- Creación de intenciones de pago seguras
+- Soporte para múltiples monedas
+- Metadatos personalizados para cada pago
+- Validación de montos y datos de pago
+- Configuración mediante variables de entorno
 
 ##  Contribución
 
