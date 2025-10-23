@@ -4,9 +4,10 @@ module.exports = app => {
     
     // Create a new Payment Intent
     router.post('/create-payment-intent', stripe.createPaymentIntent);
+    // Confirm a Payment Intent
     
     // Get Stripe public key
-    //router.get('/public-key', stripe.getPublicKey);
+    router.get('/public-key', stripe.getPublicKey);
     
     app.use('/api/stripe', router);
 };
