@@ -1,13 +1,15 @@
+require('dotenv').config();
+
 module.exports = {
-    HOST: "ep-green-waterfall-ad36l30b-pooler.c-2.us-east-1.aws.neon.tech",
-    USER: "neondb_owner",
-    PASSWORD: "npg_b6oZM7jBkUhz",
-    DB: "neondb",
-    dialect: "postgres",
+    HOST: process.env.DB_HOST,
+    USER: process.env.DB_USER,
+    PASSWORD: process.env.DB_PASSWORD,
+    DB: process.env.DB_NAME,
+    dialect: process.env.DB_DIALECT,
     pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
+        max: parseInt(process.env.DB_POOL_MAX),
+        min: parseInt(process.env.DB_POOL_MIN),
+        acquire: parseInt(process.env.DB_POOL_ACQUIRE),
+        idle: parseInt(process.env.DB_POOL_IDLE)
     }
 };

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const dbConfig = require('../config/db.config');
 const Sequelize = require('sequelize');
 const petReservationModel = require('./petReservation.model');

@@ -22,6 +22,7 @@ require('./app/routes/service.route')(app);
 require('./app/routes/dashboard.route')(app);
 require('./app/routes/customer.route')(app);
 require('./app/routes/reserve.route')(app);
+require('./app/routes/stripe.route')(app);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
