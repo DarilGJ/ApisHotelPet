@@ -57,6 +57,7 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
    ```env
    STRIPE_SECRET_KEY=tu_stripe_secret_key
    STRIPE_PUBLIC_KEY=tu_stripe_public_key
+   JWT_SECRET=una_clave_secreta_segura
    ```
 
 5. **Sincronización de Base de Datos**
@@ -83,11 +84,13 @@ npm start
 - `GET /api/dashboard/recent-reservations` - Obtener reservas recientes
 
 ### Usuarios
+- `POST /api/users/register` - Registrar nuevo usuario
+- `POST /api/users/login` - Iniciar sesión y obtener JWT
+- `POST /api/users/create` - Crear usuario (admin)
 - `GET /api/users` - Obtener todos los usuarios
-- `POST /api/users` - Crear nuevo usuario
-- `GET /api/users/:id` - Obtener usuario por ID
-- `PUT /api/users/:id` - Actualizar usuario
-- `DELETE /api/users/:id` - Eliminar usuario
+- `GET /api/users/:id/user` - Obtener usuario por ID
+- `PUT /api/users/:id/update` - Actualizar usuario
+- `DELETE /api/users/:id/delete` - Eliminar usuario
 
 ### Habitaciones
 - `GET /api/rooms` - Obtener todas las habitaciones
@@ -126,6 +129,7 @@ npm start
 
 ### Pagos (Stripe)
 - `POST /api/stripe/create-payment-intent` - Crear intención de pago
+- `GET /api/stripe/public-key` - Obtener la clave pública de Stripe
 
 ### Ejemplos de Uso - Reservas
 
@@ -189,6 +193,63 @@ Content-Type: application/json
 {
   "clientSecret": "pi_xxx_secret_xxx",
   "paymentIntentId": "pi_xxx"
+}
+```
+
+### Ejemplos de Uso - Usuarios
+
+#### Registrar usuario
+```bash
+POST /api/users/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "StrongPass123",
+  "usertype": "customer",
+  "customerId": 1
+}
+```
+
+**Respuesta:**
+```json
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": 10,
+    "email": "user@example.com",
+    "usertype": "customer",
+    "customerId": 1,
+    "isActive": true,
+    "createdAt": "2025-10-30T12:00:00.000Z"
+  }
+}
+```
+
+#### Login
+```bash
+POST /api/users/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "StrongPass123"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 10,
+    "email": "user@example.com",
+    "usertype": "customer",
+    "customerId": 1,
+    "isActive": true,
+    "lastLogin": "2025-10-30T12:05:00.000Z"
+  }
 }
 ```
 
