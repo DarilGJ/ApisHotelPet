@@ -1,16 +1,21 @@
 module.exports = app => {
 	const users = require('../controllers/user.controller');
+	//const { authenticateToken } = require('../middleware/auth');
 	var router = require('express').Router();
-	// Create a new User
+	
+	// Authentication routes
+	router.post('/register', users.register);
+	router.post('/login', users.login);
+	
+	// Protected routes
+	//router.get('/profile', authenticateToken, users.getProfile);
+	
+	// Admin routes (existing CRUD operations)
 	router.post('/create', users.create);
-	// Retrieve all Users
 	router.get('/', users.findAll);
-	// Retrieve a single User with id
 	router.get('/:id/user', users.findOne);
-	// Update a User with id
 	router.put('/:id/update', users.update);
-	// Delete a User with id
-    router.delete('/:id/delete', users.delete);
+	router.delete('/:id/delete', users.delete);
 
     app.use('/api/users', router);
 };

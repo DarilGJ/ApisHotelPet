@@ -6,26 +6,49 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-        name: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
         email: {
             type: Sequelize.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
+            validate: {
+                isEmail: true
+            }
         },
         password: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        role: {
-            type: Sequelize.ENUM('admin', 'user'),
-            defaultValue: "user"
+        usertype: {
+            type: Sequelize.ENUM('staff', 'customer'),
+            allowNull: false
+        },
+        // Foreign keys para relacionar con Employee o Customer
+        employeeId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'employees',
+                key: 'id'
+            }
+        },
+        customerId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'customers',
+                key: 'id'
+            }
+        },
+        isActive: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: true
+        },
+        lastLogin: {
+            type: Sequelize.DATE
         }
     },
         {
-            underscored: true  
+            underscored: true
         }
     );
 

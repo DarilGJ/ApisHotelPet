@@ -1,6 +1,8 @@
 const db = require('../models');
 const User = db.users;
 const Op = db.Sequelize.Op;
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -13,10 +15,13 @@ exports.create = (req, res) => {
     }
     // Create a User
     const user = {
-        name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        role: req.body.role,
+        usertype: req.body.usertype,
+        employeeId: req.body.employeeId,
+        customerId: req.body.customerId,
+        isActive: req.body.isActive,
+        lastLogin: req.body.lastLogin
     };
     // Save User in the database
     User.create(user)
@@ -114,3 +119,167 @@ exports.delete = (req, res) => {
             });
         });
 };
+
+// Register a new user
+exports.register = async (req, res) => {
+    try {
+        const { email, password, usertype, employeeId, customerId } = req.body;
+
+        // Validate required fields
+        if (!email || !password || !usertype) {
+            return res.status(400).json({
+                message: 'Email, password and usertype are required'
+            });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ where: { email: email } });
+        if (existingUser) {
+            return res.status(400).json({
+                message: 'User already exists with this email'
+            });
+        }
+
+        // Hash password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Create user
+        const user = {
+            email: email,
+            password: hashedPassword,
+            usertype: usertype,
+            employeeId: employeeId || null,
+            customerId: customerId || null,
+            isActive: true
+        };
+
+        const newUser = await User.create(user);
+        
+        // Remove password from response
+        const userResponse = {
+            id: newUser.id,
+            email: newUser.email,
+            usertype: newUser.usertype,
+            employeeId: newUser.employeeId,
+            customerId: newUser.customerId,
+            isActive: newUser.isActive,
+            createdAt: newUser.createdAt
+        };
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: userResponse
+        });
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({
+            message: 'Error registering user',
+            error: error.message
+        });
+    }
+};
+
+// Login user
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Validate required fields
+        if (!email || !password) {
+            return res.status(400).json({
+                message: 'Email and password are required'
+            });
+        }
+
+        // Find user by email
+        const user = await User.findOne({ where: { email: email } });
+        if (!user) {
+            return res.status(401).json({
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                message: 'Account is deactivated'
+            });
+        }
+
+        // Compare password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Update last login
+        await user.update({ lastLogin: new Date() });
+
+        //Generate JWT token
+        const token = jwt.sign(
+            { 
+                id: user.id, 
+                email: user.email, 
+                usertype: user.usertype 
+            },
+            process.env.JWT_SECRET || 'your-secret-key', // Use environment variable
+            { expiresIn: '24h' }
+        );
+
+        // Remove password from response
+        const userResponse = {
+            id: user.id,
+            email: user.email,
+            usertype: user.usertype,
+            employeeId: user.employeeId,
+            customerId: user.customerId,
+            isActive: user.isActive,
+            lastLogin: user.lastLogin
+        };
+
+        res.json({
+            message: 'Login successful',
+            token: token,
+            user: userResponse
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            message: 'Error during login',
+            error: error.message
+        });
+    }
+};
+
+// Get current user profile
+// exports.getProfile = async (req, res) => {
+//     try {
+//         const userId = req.user.id; // From JWT middleware
+        
+//         const user = await User.findByPk(userId, {
+//             attributes: { exclude: ['password'] }
+//         });
+
+//         if (!user) {
+//             return res.status(404).json({
+//                 message: 'User not found'
+//             });
+//         }
+
+//         res.json({
+//             user: user
+//         });
+
+//     } catch (error) {
+//         console.error('Get profile error:', error);
+//         res.status(500).json({
+//             message: 'Error getting user profile',
+//             error: error.message
+//         });
+//     }
+// };
