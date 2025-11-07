@@ -3,15 +3,23 @@ const dbConfig = require('../config/db.config');
 const Sequelize = require('sequelize');
 const petReservationModel = require('./petReservation.model');
 
+// Determinar si se debe usar SSL
+// SSL es requerido para servidores remotos como Neon.tech, Render, etc.
+const shouldUseSSL = dbConfig.ssl || 
+    (dbConfig.HOST && dbConfig.HOST !== 'localhost' && dbConfig.HOST !== '127.0.0.1');
+
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
+    port: dbConfig.PORT,
     dialect: dbConfig.dialect,
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false // This is important for self-signed certificates
+    dialectOptions: shouldUseSSL
+        ? {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
         }
-    },
+        : {},
     pool: {
         max: dbConfig.pool.max,
         min: dbConfig.pool.min,
