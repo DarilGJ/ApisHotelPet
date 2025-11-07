@@ -2,7 +2,7 @@
 
 Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyecto final de Desarrollo Web.
 
-##  Características
+## Características
 
 - API RESTful para gestión de hotel de mascotas
 - Base de datos PostgreSQL con Sequelize ORM
@@ -11,29 +11,33 @@ Backend API para el sistema de gestión de Hotel Pets, desarrollado como proyect
 - Gestión de habitaciones, empleados, servicios y clientes
 - Relaciones complejas entre entidades (N:M, 1:N)
 - Base de datos en la nube (Neon.tech)
+- **Autenticación JWT** - Sistema seguro de autenticación y autorización
 - **Integración de pagos con Stripe** - Procesamiento seguro de pagos
 - **Variables de entorno** - Configuración segura con dotenv
+- **Middleware de autorización** - Control de acceso por roles (staff, customer)
 
-##  Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Node.js** - Runtime de JavaScript
 - **Express.js** - Framework web para Node.js
 - **PostgreSQL** - Base de datos relacional (Neon.tech)
 - **Sequelize** - ORM para Node.js
+- **JWT (jsonwebtoken)** - Autenticación basada en tokens
+- **bcryptjs** - Encriptación de contraseñas
 - **CORS** - Middleware para manejo de CORS
 - **Nodemon** - Herramienta de desarrollo
 - **pg** - Driver de PostgreSQL para Node.js
 - **Stripe** - Plataforma de pagos en línea
 - **dotenv** - Gestión de variables de entorno
 
-##  Prerrequisitos
+## Prerrequisitos
 
 Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
 - [Node.js](https://nodejs.org/) (versión 14 o superior)
 - npm o yarn
 
-##  Instalación
+## Instalación
 
 1. **Clona el repositorio**
    ```bash
@@ -53,18 +57,22 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
 4. **Configuración de Variables de Entorno**
    - Crea un archivo `.env` en la raíz del proyecto
-   - Configura las siguientes variables:
+   - Configura las siguientes variables (requeridas):
    ```env
-   STRIPE_SECRET_KEY=tu_stripe_secret_key
-   STRIPE_PUBLIC_KEY=tu_stripe_public_key
-   JWT_SECRET=una_clave_secreta_segura
+   # Stripe Configuration
+   STRIPE_SECRET_KEY=sk_test_tu_stripe_secret_key
+   STRIPE_PUBLIC_KEY=pk_test_tu_stripe_public_key
+   
+   # JWT Configuration
+   JWT_SECRET=una_clave_secreta_segura_y_larga_para_jwt
    ```
+   > **Nota:** Para producción, usa claves de Stripe en modo live y un JWT_SECRET más seguro.
 
 5. **Sincronización de Base de Datos**
    - Las tablas se crean automáticamente al iniciar el servidor
    - Sequelize sincroniza los modelos con la base de datos
 
-##  Uso
+## Uso
 
 ### Desarrollo
 ```bash
@@ -77,15 +85,37 @@ El servidor se ejecutará en `http://localhost:3000`
 npm start
 ```
 
-##  API Endpoints
+## Autenticación
+
+El sistema utiliza JWT (JSON Web Tokens) para la autenticación. Los tokens tienen una validez de 24 horas.
+
+### Flujo de Autenticación
+
+1. **Registro/Login**: El usuario se registra o inicia sesión y recibe un token JWT
+2. **Uso del Token**: El token debe enviarse en el header `Authorization` como `Bearer <token>`
+3. **Middleware**: Las rutas protegidas verifican el token automáticamente
+
+### Tipos de Usuario
+
+- **customer**: Cliente del hotel
+- **staff**: Empleado del hotel
+- **admin**: Administrador del sistema
+
+### Middleware Disponible
+
+- `authenticateToken`: Verifica que el usuario esté autenticado
+- `requireStaff`: Requiere que el usuario sea staff
+- `requireCustomer`: Requiere que el usuario sea customer
+
+## API Endpoints
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Obtener estadísticas del dashboard
 - `GET /api/dashboard/recent-reservations` - Obtener reservas recientes
 
-### Usuarios
-- `POST /api/users/register` - Registrar nuevo usuario
-- `POST /api/users/login` - Iniciar sesión y obtener JWT
+### Usuarios (Autenticación)
+- `POST /api/users/register` - Registrar nuevo usuario (público)
+- `POST /api/users/login` - Iniciar sesión y obtener JWT (público)
 - `POST /api/users/create` - Crear usuario (admin)
 - `GET /api/users` - Obtener todos los usuarios
 - `GET /api/users/:id/user` - Obtener usuario por ID
@@ -196,7 +226,7 @@ Content-Type: application/json
 }
 ```
 
-### Ejemplos de Uso - Usuarios
+### Ejemplos de Uso - Autenticación
 
 #### Registrar usuario
 ```bash
@@ -253,7 +283,14 @@ Content-Type: application/json
 }
 ```
 
-##  Estructura del Proyecto
+#### Usar token en peticiones protegidas
+```bash
+GET /api/reserves
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+```
+
+## Estructura del Proyecto
 
 ```
 backend/
@@ -271,6 +308,8 @@ backend/
 │   │   ├── service.controller.js
 │   │   ├── stripe.controller.js  # Controlador de pagos Stripe
 │   │   └── user.controller.js
+│   ├── middleware/
+│   │   └── auth.js               # Middleware de autenticación JWT
 │   ├── models/                   # Modelos de Sequelize con relaciones
 │   │   ├── customer.model.js
 │   │   ├── employee.model.js
@@ -293,10 +332,11 @@ backend/
 │       └── user.route.js
 ├── server.js                     # Archivo principal del servidor
 ├── package.json                  # Dependencias y scripts
+├── .env                          # Variables de entorno (no incluido en git)
 └── README.md                     # Este archivo
 ```
 
-##  Modelo de Base de Datos
+## Modelo de Base de Datos
 
 ### Entidades Principales
 - **Users** - Usuarios del sistema
@@ -315,7 +355,7 @@ backend/
 - **Reserve ↔ Pets** (N:M) - Una reserva puede incluir múltiples mascotas
 - **Reserve ↔ Services** (N:M) - Una reserva puede incluir múltiples servicios
 
-##  Dashboard
+## Dashboard
 
 El sistema incluye un dashboard con estadísticas en tiempo real:
 
@@ -326,12 +366,13 @@ El sistema incluye un dashboard con estadísticas en tiempo real:
 - **Reservas Activas** - Reservas con estado "confirmed"
 - **Habitaciones Disponibles** - Habitaciones con estado "available"
 
-##  Scripts Disponibles
+## Scripts Disponibles
 
 - `npm start` - Ejecuta el servidor en modo producción
-- `npm run dev` - Ejecuta el servidor en modo desarrollo con nodemon
+- `npm run dev` - Ejecuta el servidor en modo desarrollo con nodemon (auto-reload)
+- `npm test` - Ejecuta los tests (pendiente de implementación)
 
-##  Configuración de Desarrollo
+## Configuración de Desarrollo
 
 ### Variables de Entorno
 El proyecto utiliza Neon.tech como base de datos en la nube y Stripe para pagos. La configuración está en los archivos de configuración:
@@ -365,16 +406,31 @@ module.exports = {
 
 **Archivo `.env` requerido:**
 ```env
+# Stripe Configuration
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLIC_KEY=pk_test_...
+
+# JWT Configuration
+JWT_SECRET=tu_clave_secreta_segura_para_jwt
 ```
+
+> **Importante:** Nunca compartas tu archivo `.env` o lo subas a control de versiones. Usa `env.example` como plantilla.
 
 ### Sincronización de Base de Datos
 - Las tablas se crean automáticamente al iniciar el servidor
 - Sequelize maneja la sincronización de modelos
 - No se requieren migraciones manuales
 
-##  Funcionalidades Implementadas
+## Funcionalidades Implementadas
+
+### Sistema de Autenticación
+- Registro de usuarios con encriptación de contraseñas (bcryptjs)
+- Login con generación de tokens JWT
+- Tokens con expiración de 24 horas
+- Middleware de autenticación para rutas protegidas
+- Control de acceso por roles (staff, customer)
+- Validación de usuarios activos/inactivos
+- Actualización automática de último login
 
 ### Sistema de Reservas
 - Creación de reservas con fechas de inicio y fin
@@ -404,7 +460,22 @@ STRIPE_PUBLIC_KEY=pk_test_...
 - Validación de montos y datos de pago
 - Configuración mediante variables de entorno
 
-##  Contribución
+## Seguridad
+
+- Las contraseñas se encriptan usando bcryptjs antes de almacenarse
+- Los tokens JWT se firman con una clave secreta
+- Las variables sensibles se manejan mediante variables de entorno
+- El middleware de autenticación valida tokens en cada petición protegida
+- Validación de usuarios activos antes de permitir login
+
+## Notas Adicionales
+
+- El servidor se ejecuta en el puerto 3000 por defecto
+- La base de datos se sincroniza automáticamente al iniciar el servidor
+- Sequelize maneja las migraciones y relaciones automáticamente
+- CORS está habilitado para permitir peticiones desde el frontend
+
+## Contribución
 
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
@@ -412,14 +483,14 @@ STRIPE_PUBLIC_KEY=pk_test_...
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
-##  Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia ISC.
 
-##  Autores
+## Autores
 
-- Daril Garcia - *Desarrollo inicial*
+- **Daril Garcia** - *Desarrollo inicial*
 
 ---
 
-**Proyecto Final - Desarrollo Web**
+**Proyecto Final - Desarrollo Web** 🐾
