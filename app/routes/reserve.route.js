@@ -5,6 +5,8 @@ module.exports = app => {
     router.post('', reserves.create);
     //Retrieve all Reserves
     router.get('', reserves.findAll);
+    //Get reservation reports with filters and statistics
+    router.get('/reports', reserves.getReports);
     //Retrieve a single Reserve with id
     router.get('/:id', reserves.findOne);
     //Update a Reserve with id
